@@ -1,0 +1,45 @@
+@import 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap';
+
+:root {
+  --font-family: 'Poppins', sans-serif;
+  --font-family-second: 'Quicksand', sans-serif;
+
+  // line heights
+  --line-height-xs: 12px;
+  --line-height-s: 14px;
+  --line-height-m: 18px;
+  --line-height-l: 20px;
+  --line-height-xl: 24px;
+  --line-height-xxl: 28px;
+
+  // font weights
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi-bold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extra-bold: 800;
+
+  // font sizes
+  --font-size-xs: 12px;
+  --font-size-s: 14px;
+  --font-size-m: 16px;
+  --font-size-l: 18px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+
+  // media
+  --media-width-sm: 576px;
+  --media-width-md: 768px;
+  --media-width-lg: 992px;
+  --media-width-xl: 1200px;
+  --media-width-xll: 1435px;
+
+  // layout
+  --mobile-header-height: calc(60px + max(var(--safe-area-inset-top), 0px));
+  --mobile-footer-height: calc(60px + max(var(--safe-area-inset-bottom), 0px));
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizespeed;
+  letter-spacing: 0.1px;
+}
