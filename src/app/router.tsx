@@ -1,11 +1,7 @@
 import { createBrowserRouter } from 'react-router';
-import { Path } from '@/shared/lib/constants/path';
-import { MainPage } from '@/pages/main-page/main-page';
-import { PlaylistsPage } from '@/pages/playlists-page/playlists-page';
-import { TracksPage } from '@/pages/tracks-page/tracks-page';
-import { ProfilePage } from '@/pages/profile-page/profile-page';
-import { PageNotFound } from '@/pages/page-not-found/page-not-found';
 import { App } from '@/app/app';
+import { MainPage, PageNotFound, PlaylistsPage, ProfilePage, TracksPage } from '@/pages';
+import { Path } from '@/shared/lib';
 
 export const router = createBrowserRouter([
   {
