@@ -1,13 +1,9 @@
-.container {
-  border-bottom: 2px solid var(--black-black-2);
-  padding-left: 100px;
-}
-
-.list {
+.header {
   display: flex;
-  gap: 40px;
-}
+  grid-area: header;
+  align-items: center;
+  justify-content: space-between;
 
-.activeLink {
-  font-weight: var(--font-size-m);
+  height: var(--header-height);
+  padding: 0 32px;
 }
