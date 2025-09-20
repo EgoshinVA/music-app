@@ -1,1 +1,1 @@
-export { playlistsApi } from './playlists-api';
+export * from './playlists-api';
