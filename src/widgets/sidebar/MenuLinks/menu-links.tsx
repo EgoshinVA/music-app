@@ -86,14 +86,14 @@ export const MenuLinks: FC = () => {
   );
 };
 
-const SidebarLink = ({ to, icon, label }: MenuLink) => (
+const SidebarLink: FC<MenuLink> = ({ to, icon, label }) => (
   <NavLink to={to} className={({ isActive }) => clsx(s.link, isActive && s.active)}>
     {icon}
     {label}
   </NavLink>
 );
 
-const SidebarButton = ({ onClick, icon, label }: MenuButton) => (
+const SidebarButton: FC<MenuButton> = ({ onClick, icon, label }) => (
   <button onClick={onClick} className={s.link} type="button">
     {icon}
     {label}
