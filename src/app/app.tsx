@@ -1,9 +1,9 @@
-function App() {
+import {Outlet} from "react-router";
+
+export const App = () => {
     return (
-        <div>
-            <h1>App</h1>
-        </div>
+        <>
+            <Outlet />
+        </>
     )
 }
-
-export default App
