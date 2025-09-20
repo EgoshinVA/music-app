@@ -13,7 +13,6 @@ module.exports = {
     'plugin:prettier/recommended',
     'plugin:react-hooks/recommended',
     'plugin:import/typescript',
-    'plugin:storybook/recommended',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {

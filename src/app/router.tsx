@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router';
+
 import { App } from '@/app/app';
 import { MainPage, PageNotFound, PlaylistsPage, ProfilePage, TracksPage } from '@/pages';
 import { Path } from '@/shared/lib';

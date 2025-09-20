@@ -1,6 +1,9 @@
-import { NavLink } from 'react-router';
-import s from './header.module.scss';
 import { FC } from 'react';
+
+import { NavLink } from 'react-router';
+
+import s from './header.module.scss';
+
 import { navItems } from '@/widgets/header/lib/nav-items';
 
 export const Header: FC = () => {
