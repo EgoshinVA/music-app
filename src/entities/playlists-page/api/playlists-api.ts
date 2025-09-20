@@ -1,6 +1,50 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import { FetchPlaylistsArgs, PlaylistsResponse } from '@/entities';
+import { CurrentUserReaction } from '@/shared/enums';
+import { Images, Tag, User } from '@/shared/types';
+
+export type PlaylistAttributes = {
+  title: string;
+  description: string;
+  addedAt: string;
+  updatedAt: string;
+  order: number;
+  dislikesCount: number;
+  likesCount: number;
+  tags: Tag[];
+  images: Images;
+  user: User;
+  currentUserReaction: CurrentUserReaction;
+};
+
+export type PlaylistData = {
+  id: string;
+  type: 'playlists';
+  attributes: PlaylistAttributes;
+};
+
+export type PlaylistMeta = {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  pagesCount: number;
+};
+
+export type FetchPlaylistsArgs = {
+  pageNumber?: number;
+  pageSize?: number;
+  search?: string;
+  sortBy?: 'addedAt' | 'likesCount';
+  sortDirection?: 'asc' | 'desc';
+  tagsIds?: string[];
+  userId?: string;
+  trackId?: string;
+};
+
+export type PlaylistsResponse = {
+  data: PlaylistData[];
+  meta: PlaylistMeta;
+};
 
 export const playlistsApi = createApi({
   reducerPath: 'playlistsApi',
@@ -12,12 +56,10 @@ export const playlistsApi = createApi({
   }),
   endpoints: build => ({
     fetchPlaylists: build.query<PlaylistsResponse, FetchPlaylistsArgs>({
-      query: () => {
-        return {
-          method: 'get',
-          url: `playlists`,
-        };
-      },
+      query: () => ({
+        method: 'get',
+        url: `playlists`,
+      }),
     }),
   }),
 });
