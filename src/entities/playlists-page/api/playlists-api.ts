@@ -46,12 +46,22 @@ export type PlaylistsResponse = {
   meta: PlaylistMeta;
 };
 
+export type CreatePlaylistArgs = {
+  title: string;
+  description: string;
+};
+
 export const playlistsApi = createApi({
   reducerPath: 'playlistsApi',
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BASE_URL,
     headers: {
       'API-KEY': import.meta.env.VITE_API_KEY,
+    },
+    prepareHeaders: headers => {
+      headers.set('Authorization', `Bearer ${import.meta.env.VITE_ACCESS_TOKEN}`);
+
+      return headers;
     },
   }),
   endpoints: build => ({
@@ -61,7 +71,14 @@ export const playlistsApi = createApi({
         url: `playlists`,
       }),
     }),
+    createPlaylist: build.mutation<{ data: PlaylistData }, CreatePlaylistArgs>({
+      query: body => ({
+        url: 'playlists',
+        method: 'post',
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useFetchPlaylistsQuery } = playlistsApi;
+export const { useFetchPlaylistsQuery, useCreatePlaylistMutation } = playlistsApi;

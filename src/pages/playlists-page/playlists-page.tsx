@@ -3,6 +3,7 @@ import { FC } from 'react';
 import s from './playlists-page.module.scss';
 
 import { useFetchPlaylistsQuery } from '@/entities';
+import { CreatePlaylistForm } from '@/features/playlists-page/ui';
 
 export const PlaylistsPage: FC = () => {
   const { data } = useFetchPlaylistsQuery({});
@@ -10,6 +11,7 @@ export const PlaylistsPage: FC = () => {
   return (
     <div className={s.container}>
       <h1>Playlists page</h1>
+      <CreatePlaylistForm />
       <div className={s.items}>
         {data?.data.map(playlist => {
           return (
