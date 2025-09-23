@@ -55,10 +55,8 @@ export const playlistsApi = createApi({
   reducerPath: 'playlistsApi',
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BASE_URL,
-    headers: {
-      'API-KEY': import.meta.env.VITE_API_KEY,
-    },
     prepareHeaders: headers => {
+      headers.set('API-KEY', import.meta.env.VITE_API_KEY);
       headers.set('Authorization', `Bearer ${import.meta.env.VITE_ACCESS_TOKEN}`);
 
       return headers;
@@ -78,7 +76,13 @@ export const playlistsApi = createApi({
         body,
       }),
     }),
+    deletePlaylist: build.mutation<void, string>({
+      query: playlistId => ({
+        url: `playlists/${playlistId}`,
+        method: 'delete',
+      }),
+    }),
   }),
 });
 
-export const { useFetchPlaylistsQuery, useCreatePlaylistMutation } = playlistsApi;
+export const { useFetchPlaylistsQuery, useCreatePlaylistMutation, useDeletePlaylistMutation } = playlistsApi;
