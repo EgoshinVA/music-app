@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
+import { baseApi } from '@/shared/api';
 import { CurrentUserReaction } from '@/shared/enums';
 import { Images, Tag, User } from '@/shared/types';
 
@@ -51,23 +50,20 @@ export type CreatePlaylistArgs = {
   description: string;
 };
 
-export const playlistsApi = createApi({
-  reducerPath: 'playlistsApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_BASE_URL,
-    prepareHeaders: headers => {
-      headers.set('API-KEY', import.meta.env.VITE_API_KEY);
-      headers.set('Authorization', `Bearer ${import.meta.env.VITE_ACCESS_TOKEN}`);
+export type UpdatePlaylistArgs = {
+  title: string;
+  description: string;
+  tagIds: string[];
+};
 
-      return headers;
-    },
-  }),
+export const playlistsApi = baseApi.injectEndpoints({
   endpoints: build => ({
     fetchPlaylists: build.query<PlaylistsResponse, FetchPlaylistsArgs>({
       query: () => ({
         method: 'get',
         url: `playlists`,
       }),
+      providesTags: ['Playlist'],
     }),
     createPlaylist: build.mutation<{ data: PlaylistData }, CreatePlaylistArgs>({
       query: body => ({
@@ -75,14 +71,29 @@ export const playlistsApi = createApi({
         method: 'post',
         body,
       }),
+      invalidatesTags: ['Playlist'],
     }),
     deletePlaylist: build.mutation<void, string>({
       query: playlistId => ({
         url: `playlists/${playlistId}`,
         method: 'delete',
       }),
+      invalidatesTags: ['Playlist'],
+    }),
+    updatePlaylist: build.mutation<void, { playlistId: string; body: UpdatePlaylistArgs }>({
+      query: ({ playlistId, body }) => ({
+        url: `playlists/${playlistId}`,
+        method: 'put',
+        body,
+      }),
+      invalidatesTags: ['Playlist'],
     }),
   }),
 });
 
-export const { useFetchPlaylistsQuery, useCreatePlaylistMutation, useDeletePlaylistMutation } = playlistsApi;
+export const {
+  useFetchPlaylistsQuery,
+  useCreatePlaylistMutation,
+  useDeletePlaylistMutation,
+  useUpdatePlaylistMutation,
+} = playlistsApi;
