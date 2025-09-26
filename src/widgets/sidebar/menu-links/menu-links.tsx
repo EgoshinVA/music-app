@@ -5,6 +5,7 @@ import { NavLink } from 'react-router';
 
 import s from './menu-links.module.scss';
 
+import { useCreatePlaylistModal } from '@/features/playlists-page/hooks/use-create-playlist-modal';
 import { CreateIcon, HomeIcon, LibraryIcon, PlaylistIcon, TrackIcon, UploadIcon } from '@/shared/assets';
 
 type MenuLink = {
@@ -46,9 +47,13 @@ const createLinks: MenuLink[] = [
 ];
 
 export const MenuLinks: FC = () => {
+  // const { data: user } = useMeQuery();
+  // user ? handleOpenCreatePlaylistModal : handleOpenAuthModal, потом
+  const { handleOpenCreatePlaylistModal } = useCreatePlaylistModal();
+
   const actionButtons: MenuButton[] = [
     {
-      onClick: () => {},
+      onClick: handleOpenCreatePlaylistModal,
       icon: <CreateIcon />,
       label: 'Create Playlist',
     },

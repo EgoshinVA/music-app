@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 
 import { useFindTagsQuery } from '@/entities/tags/api/tags-api';
-import { useDebounce } from '@/shared/lib/hooks/use-debaunce';
+import { useDebounce } from '@/shared/lib';
 import { Autocomplete } from '@/shared/ui';
 
 type SearchType = 'tags' | 'artists';
