@@ -2,6 +2,7 @@ import { FC } from 'react';
 
 import clsx from 'clsx';
 import { Outlet } from 'react-router';
+import { ToastContainer } from 'react-toastify';
 
 import s from './app.module.scss';
 
@@ -27,6 +28,7 @@ export const App: FC = () => {
       </main>
       {/* {IS_PLAYER_OPEN && <Player />} */}
       {isCreatePlaylistModalOpen && <CreatePlaylistModal />}
+      <ToastContainer />
     </div>
   );
 };
