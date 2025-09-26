@@ -1,3 +1,5 @@
+import { ImageType } from '@/shared/enums';
+
 export type Tag = {
   id: string;
   name: string;
@@ -13,7 +15,7 @@ export type Images = {
 };
 
 export type Cover = {
-  type: 'original' | 'medium' | 'thumbnail';
+  type: ImageType;
   width: number;
   height: number;
   fileSize: number;
