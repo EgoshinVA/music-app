@@ -5,3 +5,9 @@ export const CurrentUserReactionType = {
 } as const;
 
 export type CurrentUserReaction = (typeof CurrentUserReactionType)[keyof typeof CurrentUserReactionType];
+
+export enum ImageType {
+  ORIGINAL = 'original',
+  MEDIUM = 'medium',
+  THUMBNAIL = 'thumbnail',
+}
