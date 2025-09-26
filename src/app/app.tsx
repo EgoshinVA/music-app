@@ -7,7 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import s from './app.module.scss';
 
 import { selectIsCreateEditModalOpen } from '@/features/playlists-page/model';
-import { CreatePlaylistModal } from '@/features/playlists-page/ui';
+import { CreateEditPlaylistModal } from '@/features/playlists-page/ui';
 import { useAppSelector, useGlobalLoading } from '@/shared/lib';
 import { LinearProgress } from '@/shared/ui';
 import { Header } from '@/widgets/header';
@@ -27,7 +27,7 @@ export const App: FC = () => {
         <Outlet />
       </main>
       {/* {IS_PLAYER_OPEN && <Player />} */}
-      {isCreatePlaylistModalOpen && <CreatePlaylistModal />}
+      {isCreatePlaylistModalOpen && <CreateEditPlaylistModal />}
       <ToastContainer />
     </div>
   );

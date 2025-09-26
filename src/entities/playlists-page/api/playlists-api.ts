@@ -62,6 +62,10 @@ export const playlistsApi = baseApi.injectEndpoints({
       query: params => ({ url: `playlists`, params }),
       providesTags: ['Playlist'],
     }),
+    fetchPlaylistById: build.query<{ data: PlaylistData }, string>({
+      query: playlistId => ({ url: `playlists/${playlistId}` }),
+      providesTags: (_result, _error, playlistId) => [{ type: 'Playlist', id: playlistId }],
+    }),
     createPlaylist: build.mutation<{ data: PlaylistData }, CreatePlaylistArgs>({
       query: body => ({
         url: 'playlists',
@@ -78,11 +82,56 @@ export const playlistsApi = baseApi.injectEndpoints({
       invalidatesTags: ['Playlist'],
     }),
     updatePlaylist: build.mutation<void, { playlistId: string; body: UpdatePlaylistArgs }>({
-      query: ({ playlistId, body }) => ({
-        url: `playlists/${playlistId}`,
-        method: 'put',
-        body,
-      }),
+      query: ({ playlistId, body }) => ({ url: `playlists/${playlistId}`, method: 'put', body }),
+      async onQueryStarted({ playlistId, body }, { dispatch, queryFulfilled, getState }) {
+        const args = playlistsApi.util.selectCachedArgsForQuery(getState(), 'fetchPlaylists');
+
+        const patchResults: any[] = [];
+
+        args.forEach(arg => {
+          patchResults.push(
+            dispatch(
+              playlistsApi.util.updateQueryData(
+                'fetchPlaylists',
+                {
+                  pageNumber: arg.pageNumber,
+                  pageSize: arg.pageSize,
+                  search: arg.search,
+                },
+                state => {
+                  const index = state.data.findIndex(playlist => playlist.id === playlistId);
+
+                  if (index !== -1) {
+                    state.data[index].attributes = { ...state.data[index].attributes, ...body };
+                  }
+                },
+              ),
+            ),
+          );
+        });
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResults.forEach(patchResult => {
+            patchResult.undo();
+          });
+        }
+      },
+      invalidatesTags: ['Playlist'],
+    }),
+    uploadPlaylistCover: build.mutation<Images, { playlistId: string; file: File }>({
+      query: ({ playlistId, file }) => {
+        const formData = new FormData();
+
+        formData.append('file', file);
+
+        return {
+          url: `playlists/${playlistId}/images/main`,
+          method: 'post',
+          body: formData,
+        };
+      },
       invalidatesTags: ['Playlist'],
     }),
   }),
@@ -90,7 +139,9 @@ export const playlistsApi = baseApi.injectEndpoints({
 
 export const {
   useFetchPlaylistsQuery,
+  useFetchPlaylistByIdQuery,
   useCreatePlaylistMutation,
   useDeletePlaylistMutation,
   useUpdatePlaylistMutation,
+  useUploadPlaylistCoverMutation,
 } = playlistsApi;

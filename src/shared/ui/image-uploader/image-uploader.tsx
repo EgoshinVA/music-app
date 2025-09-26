@@ -5,38 +5,44 @@ import { clsx } from 'clsx';
 import s from './image-uploader.module.scss';
 
 import { ImageUploadIcon } from '@/shared/assets';
-import { IconButton, Typography } from '@/shared/ui';
+import { CropShape, IconButton, ImageCropper, Typography } from '@/shared/ui';
 
 export type ImageUploaderProps = {
   onImageSelect: (file: File) => void;
   className?: string;
-  acceptedFormats?: string[];
-  maxSizeInMB?: number;
   placeholder?: string;
+  cropShape?: CropShape;
+  enableCrop?: boolean;
+  initialImageUrl?: string;
 };
+
+const MAX_SIZE_IN_MB = 5;
+const ACCEPTED_FORMATS = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 export const ImageUploader: FC<ImageUploaderProps> = ({
   className,
   onImageSelect,
-  acceptedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
-  maxSizeInMB = 5,
   placeholder = 'Upload Cover Image',
+  cropShape = 'rect',
+  enableCrop = true,
+  initialImageUrl,
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(initialImageUrl || null);
+  const [originalFile, setOriginalFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showCropModal, setShowCropModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = (file: File): string | null => {
-    if (!acceptedFormats.includes(file.type)) {
-      return `Only ${acceptedFormats.join(', ')} files are allowed`;
+    if (!ACCEPTED_FORMATS.includes(file.type)) {
+      return `Only ${ACCEPTED_FORMATS.join(', ')} files are allowed`;
     }
 
-    // eslint-disable-next-line no-magic-numbers
-    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+    const maxSizeInBytes = MAX_SIZE_IN_MB * 1024 * 1024;
 
     if (file.size > maxSizeInBytes) {
-      return `File size must be less than ${maxSizeInMB}MB`;
+      return `File size must be less than ${MAX_SIZE_IN_MB}MB`;
     }
 
     return null;
@@ -53,16 +59,42 @@ export const ImageUploader: FC<ImageUploaderProps> = ({
     }
 
     setError(null);
+    setOriginalFile(file);
 
     // Create preview
     const reader = new FileReader();
 
     reader.onload = e => {
-      setPreview(e.target?.result as string);
+      const imageUrl = e.target?.result as string;
+
+      setPreview(imageUrl);
+
+      if (enableCrop) {
+        setShowCropModal(true);
+      } else {
+        onImageSelect(file);
+      }
     };
     reader.readAsDataURL(file);
+  };
 
-    onImageSelect(file);
+  const handleCropComplete = (croppedFile: File): void => {
+    // Create preview for cropped image
+    const reader = new FileReader();
+
+    reader.onload = e => {
+      setPreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(croppedFile);
+
+    setShowCropModal(false);
+    onImageSelect(croppedFile);
+  };
+
+  const handleCropCancel = (): void => {
+    setShowCropModal(false);
+    setPreview(null);
+    setOriginalFile(null);
   };
 
   const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -99,6 +131,7 @@ export const ImageUploader: FC<ImageUploaderProps> = ({
     e.preventDefault();
     e.stopPropagation();
     setPreview(null);
+    setOriginalFile(null);
     setError(null);
     // Clear input value to allow selecting the same file again
     if (fileInputRef.current) {
@@ -107,46 +140,64 @@ export const ImageUploader: FC<ImageUploaderProps> = ({
   };
 
   return (
-    <div className={clsx(s.container, className)}>
-      <label
-        className={clsx(s.dropZone, isDragOver && s.dragOver, preview && s.hasPreview, error && s.error)}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={acceptedFormats.join(',')}
-          onChange={handleFileInputChange}
-          className={s.hiddenInput}
-          tabIndex={0}
-        />
+    <>
+      <div className={clsx(s.container, className)}>
+        <label
+          className={clsx(s.dropZone, isDragOver && s.dragOver, preview && s.hasPreview, error && s.error)}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={ACCEPTED_FORMATS.join(',')}
+            onChange={handleFileInputChange}
+            className={s.hiddenInput}
+            tabIndex={0}
+          />
 
-        {preview ? (
-          <div className={s.previewContainer}>
-            <img src={preview} alt="Preview" className={s.previewImage} />
-            <IconButton className={s.removeButton} onClick={handleRemoveImage} aria-label="Remove image" type="button">
-              ✕
-            </IconButton>
-          </div>
-        ) : (
-          <div className={s.uploadContent}>
-            <div className={s.uploadIcon}>
-              <ImageUploadIcon width={24} height={24} />
+          {preview ? (
+            <div className={s.previewContainer}>
+              <img src={preview} alt="Preview" className={s.previewImage} />
+              <IconButton
+                className={s.removeButton}
+                onClick={handleRemoveImage}
+                aria-label="Remove image"
+                type="button"
+              >
+                ✕
+              </IconButton>
             </div>
-            <Typography variant="body2" className={s.uploadText}>
-              {placeholder}
-            </Typography>
-          </div>
-        )}
-      </label>
+          ) : (
+            <div className={s.uploadContent}>
+              <div className={s.uploadIcon}>
+                <ImageUploadIcon width={24} height={24} />
+              </div>
+              <Typography variant="body2" className={s.uploadText}>
+                {placeholder}
+              </Typography>
+            </div>
+          )}
+        </label>
 
-      {error && (
-        <Typography variant="error" className={s.errorMessage}>
-          {error}
-        </Typography>
+        {error && (
+          <Typography variant="error" className={s.errorMessage}>
+            {error}
+          </Typography>
+        )}
+      </div>
+
+      {enableCrop && preview && originalFile && (
+        <ImageCropper
+          isOpen={showCropModal}
+          onClose={handleCropCancel}
+          onCropComplete={handleCropComplete}
+          imageSrc={preview}
+          originalFileName={originalFile.name}
+          cropShape={cropShape}
+        />
       )}
-    </div>
+    </>
   );
 };
