@@ -11,19 +11,13 @@ import { Pagination, SearchTags, SearchTextField, SortSelect, Typography } from 
 export const PlaylistsPage: FC = () => {
   const { pageNumber, handlePageChange, debouncedSearch, sortBy, sortDirection, tagsIds } = usePageSearchParams();
 
-  const { data: playlists } = useFetchPlaylistsQuery(
-    {
-      pageNumber,
-      search: debouncedSearch,
-      ...(sortBy && { sortBy }),
-      ...(sortDirection && { sortDirection }),
-      ...(tagsIds.length > 0 && { tagsIds }),
-    },
-    {
-      pollingInterval: 3000,
-      skipPollingIfUnfocused: true,
-    },
-  );
+  const { data: playlists } = useFetchPlaylistsQuery({
+    pageNumber,
+    search: debouncedSearch,
+    ...(sortBy && { sortBy }),
+    ...(sortDirection && { sortDirection }),
+    ...(tagsIds.length > 0 && { tagsIds }),
+  });
   const pagesCount = playlists?.meta.pagesCount || 1;
 
   return (
