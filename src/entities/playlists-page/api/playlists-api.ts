@@ -59,10 +59,7 @@ export type UpdatePlaylistArgs = {
 export const playlistsApi = baseApi.injectEndpoints({
   endpoints: build => ({
     fetchPlaylists: build.query<PlaylistsResponse, FetchPlaylistsArgs>({
-      query: () => ({
-        method: 'get',
-        url: `playlists`,
-      }),
+      query: params => ({ url: `playlists`, params }),
       providesTags: ['Playlist'],
     }),
     createPlaylist: build.mutation<{ data: PlaylistData }, CreatePlaylistArgs>({

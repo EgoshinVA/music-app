@@ -1,69 +1,65 @@
-import { FC, useState } from 'react';
-
-import { useForm } from 'react-hook-form';
+import { FC } from 'react';
 
 import s from './playlists-page.module.scss';
 
-import { PlaylistData, UpdatePlaylistArgs, useDeletePlaylistMutation, useFetchPlaylistsQuery } from '@/entities';
-import { CreatePlaylistForm, EditPlaylistForm, PlaylistItem } from '@/features/playlists-page/ui';
+import { useFetchPlaylistsQuery } from '@/entities';
+import { usePageSearchParams } from '@/features/playlists-page/hooks';
+import { PlaylistCard } from '@/features/playlists-page/ui/playlist-card';
+import defaultCover from '@/shared/assets/images/default-playlist-cover.png';
+import { Pagination, SearchTags, SearchTextField, SortSelect, Typography } from '@/shared/ui';
 
 export const PlaylistsPage: FC = () => {
-  const [playlistId, setPlaylistId] = useState<string | null>(null);
+  const { pageNumber, handlePageChange, debouncedSearch, sortBy, sortDirection, tagsIds } = usePageSearchParams();
 
-  const { register, handleSubmit, reset } = useForm<UpdatePlaylistArgs>();
-
-  const { data } = useFetchPlaylistsQuery({});
-
-  const [deletePlaylist] = useDeletePlaylistMutation();
-
-  const deletePlaylistHandler = (playlistId: string): void => {
-    if (confirm('Are you sure you want to delete the playlist?')) {
-      deletePlaylist(playlistId);
-    }
-  };
-
-  const editPlaylistHandler = (playlist: PlaylistData | null): void => {
-    if (playlist) {
-      setPlaylistId(playlist.id);
-      reset({
-        title: playlist.attributes.title,
-        description: playlist.attributes.description,
-        tagIds: playlist.attributes.tags.map(t => t.id),
-      });
-    } else {
-      setPlaylistId(null);
-    }
-  };
+  const { data: playlists } = useFetchPlaylistsQuery(
+    {
+      pageNumber,
+      search: debouncedSearch,
+      ...(sortBy && { sortBy }),
+      ...(sortDirection && { sortDirection }),
+      ...(tagsIds.length > 0 && { tagsIds }),
+    },
+    {
+      pollingInterval: 3000,
+      skipPollingIfUnfocused: true,
+    },
+  );
+  const pagesCount = playlists?.meta.pagesCount || 1;
 
   return (
-    <div className={s.container}>
-      <h1>Playlists page</h1>
-      <CreatePlaylistForm />
-      <div className={s.items}>
-        {data?.data.map(playlist => {
-          const isEditing = playlistId === playlist.id;
+    <div>
+      <Typography variant="h2" as="h1" className={s.title}>
+        All Playlists
+      </Typography>
+      <div className={s.controls}>
+        <div className={s.controlsRow}>
+          <SearchTextField />
+          <SortSelect />
+        </div>
+        <SearchTags type="tags" className={s.searchTags} />
+      </div>
+      <div className={s.playlists}>
+        {playlists?.data.map(playlist => {
+          const originalCover = playlist.attributes.images.main?.find(img => img.type === 'original');
+          const src = originalCover ? originalCover?.url : defaultCover;
 
           return (
-            <div className={s.item} key={playlist.id}>
-              {isEditing ? (
-                <EditPlaylistForm
-                  editPlaylist={editPlaylistHandler}
-                  setPlaylistId={setPlaylistId}
-                  playlistId={playlistId}
-                  handleSubmit={handleSubmit}
-                  register={register}
-                />
-              ) : (
-                <PlaylistItem
-                  playlist={playlist}
-                  deletePlaylist={deletePlaylistHandler}
-                  editPlaylist={editPlaylistHandler}
-                />
-              )}
-            </div>
+            <PlaylistCard
+              key={playlist.id}
+              id={playlist.id}
+              title={playlist.attributes.title}
+              image={src}
+              description={playlist.attributes.description}
+              isShowReactionButtons
+              reaction={playlist.attributes.currentUserReaction}
+              onLike={() => {}}
+              onDislike={() => {}}
+              likesCount={playlist.attributes.likesCount}
+            />
           );
         })}
       </div>
+      <Pagination className={s.pagination} page={pageNumber} pagesCount={pagesCount} onPageChange={handlePageChange} />
     </div>
   );
 };
