@@ -17,6 +17,7 @@ export const PlaylistsPage: FC = () => {
     ...(sortBy && { sortBy }),
     ...(sortDirection && { sortDirection }),
     ...(tagsIds.length > 0 && { tagsIds }),
+    pageSize: 15,
   });
   const pagesCount = playlists?.meta.pagesCount || 1;
 

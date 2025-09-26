@@ -5,8 +5,11 @@ import { NavLink } from 'react-router';
 
 import s from './menu-links.module.scss';
 
+import { useGetMeQuery } from '@/entities/auth';
+import { setIsAuthModalOpen } from '@/features/auth/model';
 import { useCreatePlaylistModal } from '@/features/playlists-page/hooks/use-create-playlist-modal';
 import { CreateIcon, HomeIcon, LibraryIcon, PlaylistIcon, TrackIcon, UploadIcon } from '@/shared/assets';
+import { useAppDispatch } from '@/shared/lib';
 
 type MenuLink = {
   to: string;
@@ -47,13 +50,17 @@ const createLinks: MenuLink[] = [
 ];
 
 export const MenuLinks: FC = () => {
-  // const { data: user } = useMeQuery();
-  // user ? handleOpenCreatePlaylistModal : handleOpenAuthModal, потом
+  const { data: user } = useGetMeQuery();
+  const dispatch = useAppDispatch();
+
   const { handleOpenCreatePlaylistModal } = useCreatePlaylistModal();
+  const handleOpenAuthModal = (): void => {
+    dispatch(setIsAuthModalOpen({ isAuthModalOpen: true }));
+  };
 
   const actionButtons: MenuButton[] = [
     {
-      onClick: handleOpenCreatePlaylistModal,
+      onClick: user ? handleOpenCreatePlaylistModal : handleOpenAuthModal,
       icon: <CreateIcon />,
       label: 'Create Playlist',
     },

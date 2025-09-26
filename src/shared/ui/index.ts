@@ -16,3 +16,4 @@ export * from './sort-select';
 export * from './search-tags';
 export * from './linear-progress';
 export * from './image-cropper';
+export * from './dropdown-menu';

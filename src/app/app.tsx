@@ -6,6 +6,8 @@ import { ToastContainer } from 'react-toastify';
 
 import s from './app.module.scss';
 
+import { selectIsAuthModalOpen } from '@/features/auth/model';
+import { LoginModal } from '@/features/auth/ui/login-modal';
 import { selectIsCreateEditModalOpen } from '@/features/playlists-page/model';
 import { CreateEditPlaylistModal } from '@/features/playlists-page/ui';
 import { useAppSelector, useGlobalLoading } from '@/shared/lib';
@@ -17,6 +19,7 @@ export const App: FC = () => {
   const IS_PLAYER_OPEN = true;
   const isCreatePlaylistModalOpen = useAppSelector(selectIsCreateEditModalOpen);
   const isGlobalLoading = useGlobalLoading();
+  const isAuthModalOpen = useAppSelector(selectIsAuthModalOpen);
 
   return (
     <div className={clsx(s.grid, IS_PLAYER_OPEN && s.playerOpen)}>
@@ -28,6 +31,7 @@ export const App: FC = () => {
       </main>
       {/* {IS_PLAYER_OPEN && <Player />} */}
       {isCreatePlaylistModalOpen && <CreateEditPlaylistModal />}
+      {isAuthModalOpen && <LoginModal />}
       <ToastContainer />
     </div>
   );
