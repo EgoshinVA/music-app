@@ -14,3 +14,4 @@ export * from './select';
 export * from './search-text-field';
 export * from './sort-select';
 export * from './search-tags';
+export * from './linear-progress';

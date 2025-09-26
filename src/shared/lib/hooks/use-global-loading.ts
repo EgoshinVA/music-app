@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 
 import { RootState } from '@/app/store/store';
 
-export const useGlobalLoading = () => {
+export const useGlobalLoading = (): boolean => {
   return useSelector((state: RootState) => {
     const queries = Object.values(state.baseApi.queries || {});
     const mutations = Object.values(state.baseApi.mutations || {});
