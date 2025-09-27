@@ -4,8 +4,7 @@ import s from './playlists-page.module.scss';
 
 import { useFetchPlaylistsQuery } from '@/entities';
 import { usePageSearchParams } from '@/features/playlists-page/hooks';
-import { PlaylistCard } from '@/features/playlists-page/ui/playlist-card';
-import defaultCover from '@/shared/assets/images/default-playlist-cover.png';
+import { PlaylistList } from '@/features/playlists-page/ui';
 import { Pagination, SearchTags, SearchTextField, SortSelect, Typography } from '@/shared/ui';
 
 export const PlaylistsPage: FC = () => {
@@ -33,27 +32,7 @@ export const PlaylistsPage: FC = () => {
         </div>
         <SearchTags type="tags" className={s.searchTags} />
       </div>
-      <div className={s.playlists}>
-        {playlists?.data.map(playlist => {
-          const originalCover = playlist.attributes.images.main?.find(img => img.type === 'original');
-          const src = originalCover ? originalCover?.url : defaultCover;
-
-          return (
-            <PlaylistCard
-              key={playlist.id}
-              id={playlist.id}
-              title={playlist.attributes.title}
-              image={src}
-              description={playlist.attributes.description}
-              isShowReactionButtons
-              reaction={playlist.attributes.currentUserReaction}
-              onLike={() => {}}
-              onDislike={() => {}}
-              likesCount={playlist.attributes.likesCount}
-            />
-          );
-        })}
-      </div>
+      <PlaylistList playlists={playlists?.data || []} isPlaylistsLoading={false} />
       <Pagination className={s.pagination} page={pageNumber} pagesCount={pagesCount} onPageChange={handlePageChange} />
     </div>
   );
