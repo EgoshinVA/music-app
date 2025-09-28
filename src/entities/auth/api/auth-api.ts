@@ -20,6 +20,10 @@ export type LoginArgs = {
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: build => ({
+    getMe: build.query<MeResponse, void>({
+      query: () => `auth/me`,
+      providesTags: ['Auth'],
+    }),
     login: build.mutation<LoginResponse, LoginArgs>({
       query: payload => ({
         url: `auth/login`,
@@ -33,10 +37,6 @@ export const authApi = baseApi.injectEndpoints({
         localStorage.setItem(AUTH_KEYS.refreshToken, data.refreshToken);
         dispatch(authApi.util.invalidateTags(['Auth']));
       },
-    }),
-    getMe: build.query<MeResponse, void>({
-      query: () => `auth/me`,
-      providesTags: ['Auth'],
     }),
     logout: build.mutation<void, void>({
       query: () => {

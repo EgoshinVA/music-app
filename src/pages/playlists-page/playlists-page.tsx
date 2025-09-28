@@ -10,7 +10,7 @@ import { Pagination, SearchTags, SearchTextField, SortSelect, Typography } from 
 export const PlaylistsPage: FC = () => {
   const { pageNumber, handlePageChange, debouncedSearch, sortBy, sortDirection, tagsIds } = usePageSearchParams();
 
-  const { data: playlists } = useFetchPlaylistsQuery({
+  const { data: playlists, isLoading } = useFetchPlaylistsQuery({
     pageNumber,
     search: debouncedSearch,
     ...(sortBy && { sortBy }),
@@ -32,7 +32,7 @@ export const PlaylistsPage: FC = () => {
         </div>
         <SearchTags type="tags" className={s.searchTags} />
       </div>
-      <PlaylistList playlists={playlists?.data || []} isPlaylistsLoading={false} />
+      <PlaylistList playlists={playlists?.data || []} isPlaylistsLoading={isLoading} />
       <Pagination className={s.pagination} page={pageNumber} pagesCount={pagesCount} onPageChange={handlePageChange} />
     </div>
   );

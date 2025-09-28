@@ -23,6 +23,12 @@ export const baseQueryWithReAuth: BaseQueryFn<string | FetchArgs, unknown, Fetch
       try {
         const refreshToken = localStorage.getItem(AUTH_KEYS.refreshToken);
 
+        if (!refreshToken) {
+          api.dispatch(authApi.endpoints.logout.initiate());
+
+          return result;
+        }
+
         const refreshResult = await baseQuery(
           { url: 'auth/refresh', method: 'post', body: { refreshToken } },
           api,
@@ -32,10 +38,17 @@ export const baseQueryWithReAuth: BaseQueryFn<string | FetchArgs, unknown, Fetch
         if (refreshResult.data && isTokens(refreshResult.data)) {
           localStorage.setItem(AUTH_KEYS.accessToken, refreshResult.data.accessToken);
           localStorage.setItem(AUTH_KEYS.refreshToken, refreshResult.data.refreshToken);
+
           result = await baseQuery(args, api, extraOptions);
         } else {
+          localStorage.removeItem(AUTH_KEYS.accessToken);
+          localStorage.removeItem(AUTH_KEYS.refreshToken);
           api.dispatch(authApi.endpoints.logout.initiate());
         }
+      } catch (error) {
+        localStorage.removeItem(AUTH_KEYS.accessToken);
+        localStorage.removeItem(AUTH_KEYS.refreshToken);
+        api.dispatch(authApi.endpoints.logout.initiate());
       } finally {
         release();
       }
